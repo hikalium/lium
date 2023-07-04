@@ -27,10 +27,23 @@ fi
 }
 
 pub fn setup_cros_repo(repo: &str, version: &str, reference: &Option<String>) -> Result<()> {
-    let url = if version == "tot" {
-        "https://chrome-internal.googlesource.com/chromeos/manifest-internal"
+    let url = if run_bash_command("cat ~/.gitcookies | cut -f 7 | grep 'google.com'", None)?
+        .status
+        .success()
+    {
+        eprintln!("Using internal repo urls");
+        if version == "tot" {
+            "https://chrome-internal.googlesource.com/chromeos/manifest-internal"
+        } else {
+            "https://chrome-internal.googlesource.com/chromeos/manifest-versions"
+        }
     } else {
-        "https://chrome-internal.googlesource.com/chromeos/manifest-versions"
+        eprintln!("Using public repo urls");
+        if version == "tot" {
+            "https://chromium.googlesource.com/chromiumos/manifest-internal"
+        } else {
+            "https://chromium.googlesource.com/chromiumos/manifest-versions"
+        }
     };
 
     let mut cmd = Command::new("repo");
@@ -62,6 +75,9 @@ pub fn setup_cros_repo(repo: &str, version: &str, reference: &Option<String>) ->
     println!("Running repo init with the given version...");
     let cld = cmd.spawn().context("Failed to execute repo init")?;
     cld.wait_with_output()
-        .context("Failed to wait for repo init")?;
+        .context("Failed to wait for repo init")?
+        .status
+        .exit_ok()
+        .context("repo init failed")?;
     Ok(())
 }

@@ -94,6 +94,13 @@ lium sync --repo /work/chromiumos_versions/R110-15248.0.0/ --version R110-15248.
 lium sync --repo /work/chromiumos_versions/R110-15248.0.0/ --version R110-15248.0.0 # you can omit --reference if the config is set
 ```
 
+### Manual full testing
+
+```
+lium setup env
+lium sync --repo /work/chromiumos/ --version R113-15384.67.0 # publicly available
+```
+
 ## How to contribute
 After making your change, please run:
 ```

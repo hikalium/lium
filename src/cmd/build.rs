@@ -86,12 +86,14 @@ cros-workon-{board} start {package_list}
     }
     if args.full {
         eprintln!("building a full image...");
+        // --accept_licenses is needed to resolve `masked by: Google-TOS license(s)` error.
+        // https://www.chromium.org/chromium-os/licensing/building-a-distro/
         chroot.run_bash_script_in_chroot(
             "build_packages",
             &format!(
                 r###"
 export USE='{use_flags}'
-build_packages --board={board} --withdev
+build_packages --accept-licenses='*' --board={board} --withdev
 build_image --board={board} --noenable_rootfs_verification test
 "###
             ),
