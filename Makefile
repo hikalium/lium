@@ -30,5 +30,8 @@ commit:
 test:
 	cargo test
 
+fulltest:
+	time -p ./fulltest.sh
+
 release:
 	bash scripts/deploy_release.sh

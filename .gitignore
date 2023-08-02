@@ -3,3 +3,5 @@
 *.swp
 *.csv
 *.json
+
+fulltest_workdir/
