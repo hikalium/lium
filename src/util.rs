@@ -115,6 +115,22 @@ pub fn run_bash_command(cmd: &str, dir: Option<&str>) -> Result<Output> {
         .context("Failed to execute cmd")
 }
 
+pub fn run_bash_command_passthrough(cmd: &str, dir: Option<&str>) -> Result<Output> {
+    let mut c = Command::new("bash");
+    let c = if let Some(dir) = dir {
+        c.current_dir(dir)
+    } else {
+        &mut c
+    };
+    eprintln!("Running: {cmd}");
+    c.arg("-c")
+        .arg(cmd)
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .output()
+        .context("Failed to execute cmd")
+}
+
 pub fn run_bash_command_with_timeout(
     script: &str,
     dir: Option<&str>,
