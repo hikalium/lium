@@ -21,6 +21,9 @@ use lium::repo::get_repo_dir;
 use lium::servo::get_cr50_attached_to_servo;
 use lium::servo::LocalServo;
 use lium::servo::ServoList;
+use lium::util::get_stdout;
+use lium::util::run_bash_command;
+use lium::util::run_bash_command_passthrough;
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::env::current_exe;
@@ -45,6 +48,7 @@ enum SubCommand {
     ArcInfo(ArgsArcInfo),
     Discover(ArgsDiscover),
     Do(ArgsDutDo),
+    FlashAp(ArgsFlashAp),
     Info(ArgsDutInfo),
     KernelConfig(ArgsDutKernelConfig),
     List(ArgsDutList),
@@ -60,6 +64,7 @@ pub fn run(args: &Args) -> Result<()> {
         SubCommand::ArcInfo(args) => run_arc_info(args),
         SubCommand::Discover(args) => run_discover(args),
         SubCommand::Do(args) => run_dut_do(args),
+        SubCommand::FlashAp(args) => run_flash_ap(args),
         SubCommand::Info(args) => run_dut_info(args),
         SubCommand::KernelConfig(args) => run_dut_kernel_config(args),
         SubCommand::List(args) => run_dut_list(args),
@@ -649,6 +654,31 @@ fn run_dut_do(args: &ArgsDutDo) -> Result<()> {
     for (name, f) in actions {
         f(dut).context(anyhow!("DUT action: {name}"))?;
     }
+    Ok(())
+}
+
+#[derive(FromArgs, PartialEq, Debug)]
+/// flash AP firmware
+#[argh(subcommand, name = "flash-ap")]
+struct ArgsFlashAp {
+    /// cr50 serial number
+    #[argh(option)]
+    serial: String,
+    /// path to an image to flash
+    #[argh(option)]
+    image: String,
+}
+fn run_flash_ap(args: &ArgsFlashAp) -> Result<()> {
+    let flashrom_path =
+        get_stdout(&run_bash_command("which flashrom", None).context("flashrom not found")?);
+    eprintln!("Using flashrom at {flashrom_path}");
+    run_bash_command(&format!("{flashrom_path} --help 2>&1 | grep raiden_debug_spi"), None).context("Programmer `raiden_debug_spi` is not supported by the flashrom. Please build & install a flashrom from: https://chromium.googlesource.com/chromiumos/third_party/flashrom/")?;
+    let cr50_serial = &args.serial;
+    let image_path = &args.image;
+    run_bash_command_passthrough(
+        &format!("sudo {flashrom_path} -p raiden_debug_spi:target=AP,serial={cr50_serial} -w {image_path}"),
+        None,
+    )?;
     Ok(())
 }
 
