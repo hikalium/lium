@@ -2,9 +2,7 @@
 
 `lium` is an extreamely user-friendly tool for ChromiumOS developers.
 
-It provides a simple way to do common development tasks and make the bareer for contributing to ChromiumOS and lium itself low as much as possible.
-
-It also comes with plenty of automatic error recovery mechanisms to avoid keep sticking your eyes on displays.
+It provides a simple way to do common development tasks and make the bareer for contributing to ChromiumOS and lium itself as low as possible.
 
 Also, it manages local development hardware including DUTs and Servos, and act as working examples of commands to interact with them.
 
@@ -12,8 +10,8 @@ We hope lium gives you some time for a nap and/or coffee, or other tasks by maki
 
 ## Core principles
 
-- P0: Make the basic ChromiumOS development workflow extremely easy as like as a usual software on GitHub
-  - Background: There have been a high barrier to get started with the ChromiumOS development. It terrifies new comers sometimes, and such environment is not sustainable nor efficient. This tool aims to solve such problems at a top priority.
+- P0: Make the basic ChromiumOS development workflow extremely easy
+  - Background: There have been a huge barriers to get started with the ChromiumOS development. It terrifies newcomers sometimes, and such environment is not sustainable or efficient. The top priority of lium is to mitigate this high barrier to enter.
   - Basic workflows include: checkout the source code, build images / deploying packages / run tests with / without modifications.
 - P1: Make it extreamely easy to start using lium
   - Background: As stated in the above, our goal is lowering the barrier for people who are about to start contribution to ChromiumOS. To achive that, a tool that aids the goal should be extremely easy as well to start using it.
@@ -116,11 +114,13 @@ lium sync --repo /work/chromiumos_versions/R110-15248.0.0/ --version R110-15248.
 ## How to contribute
 After making your change, please run:
 ```
-make commit
+make check
 ```
-to make a commit after running various checks.
+to verify your change with formatting checks and unit tests.
 
 Once your commit is ready, please file a pull request on GitHub, as described in [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+To make sure the commits in the main tree to be bisectable, pull requests will be squashed and rebased on top of the main branch before being merged. Therefore, please make sure that the title and the description of a pull request can be treated as commit messages, before submitting it out for code review.
 
 Happy hacking!
 
